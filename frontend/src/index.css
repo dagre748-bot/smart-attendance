@@ -287,91 +287,99 @@ p {
 
   .main-content {
     padding: 1.25rem;
-    padding-top: 5rem;
-    padding-bottom: calc(var(--nav-height) + 1.5rem);
+    padding-top: 5.5rem; /* Space for mobile header */
     width: 100%;
     margin: 0;
   }
 
-  /* Sleek Floating Bottom Navigation */
+  /* Sleek Sliding Sidebar for Mobile */
   .sidebar {
     position: fixed;
-    bottom: 1.25rem;
-    left: 1.25rem;
-    right: 1.25rem;
-    width: auto !important;
-    height: var(--nav-height) !important;
-    background: rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: blur(12px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    border-radius: 1.5rem !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 0 1rem !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px !important;
+    height: 100vh !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-right: 1px solid var(--border-color);
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    padding: 1.5rem !important;
     margin: 0 !important;
-    z-index: 2000;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 3000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0,0,0,0.1);
   }
 
-  /* Dark mode support for nav */
-  @media (prefers-color-scheme: dark) {
-    .sidebar {
-      background: rgba(17, 24, 39, 0.8) !important;
-      border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Mobile Backdrop Overlay */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 2500;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   .sidebar .logo-section, 
   .sidebar .user-profile,
   .sidebar .logout-section {
-    display: none !important;
+    display: flex !important;
   }
 
   .nav-links {
-    flex-direction: row !important;
+    flex-direction: column !important;
     width: 100% !important;
-    height: 100%;
-    justify-content: space-around !important;
-    align-items: center;
-    gap: 0;
+    height: auto !important;
+    justify-content: flex-start !important;
+    align-items: stretch;
+    gap: 0.5rem;
     padding: 0;
   }
   
   .nav-item {
     display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
     align-items: center !important;
-    gap: 0.35rem !important;
-    padding: 0.5rem !important;
+    gap: 0.75rem !important;
+    padding: 0.75rem 1rem !important;
     text-decoration: none;
     color: var(--text-secondary);
     transition: all 0.2s ease;
-    border-radius: 1rem;
-    flex: 1;
+    border-radius: 0.75rem;
+    flex: none;
   }
 
   .nav-item.active {
+    background: rgba(59, 130, 246, 0.1);
     color: var(--accent-primary) !important;
-    transform: translateY(-4px);
-  }
-
-  .nav-item.active svg {
-    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
+    transform: none;
   }
 
   .nav-item span {
     display: block !important;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: normal;
   }
-
   .nav-item svg {
     width: 24px;
     height: 24px;
@@ -392,9 +400,24 @@ p {
     border-bottom: 1px solid var(--border-color);
     align-items: center;
     justify-content: space-between;
-    padding: 0 1.5rem;
+    padding: 0 1rem;
     z-index: 2000;
-    transition: all 0.3s ease;
+  }
+
+  .menu-toggle {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+  }
+
+  .menu-toggle:active {
+    background: rgba(0,0,0,0.05);
   }
 
   @media (prefers-color-scheme: dark) {

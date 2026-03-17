@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { 
@@ -6,15 +6,21 @@ import {
   QrCode,
   ScanLine,
   LogOut, 
-  UserCircle
+  UserCircle,
+  Menu,
+  X
 } from 'lucide-react';
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
 
   const isStudent = user?.role === 'STUDENT';
   const rolePrefix = isStudent ? '/student' : '/teacher';
+
+  const toggleSidebar = () => setIsOpen(!isOpen);
+  const closeSidebar = () => setIsOpen(false);
 
   const handleLogout = () => {
     logout();
@@ -23,21 +29,25 @@ const Sidebar = () => {
 
   return (
     <>
+      {/* Mobile Backdrop */}
+      {isOpen && <div className="sidebar-overlay" onClick={closeSidebar} />}
+
       {/* Mobile-only header */}
       <div className="mobile-header">
+        <button className="menu-toggle" onClick={toggleSidebar}>
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <div style={{ background: 'var(--accent-primary)', color: 'white', borderRadius: '0.4rem', padding: '0.3rem' }}>
             <QrCode size={18} />
           </div>
           <span style={{ fontWeight: 700 }}>Smart Attend</span>
         </div>
-        <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', color: 'var(--danger)' }}>
-          <LogOut size={20} />
-        </button>
+        <div style={{ width: '24px' }} /> {/* Spacer to center logo */}
       </div>
 
-      <aside className="sidebar">
-        <div className="logo-section" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+        <div className="logo-section" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
           <div style={{
             background: 'var(--accent-primary)',
             color: 'white',
@@ -56,7 +66,7 @@ const Sidebar = () => {
           display: 'flex',
           alignItems: 'center',
           gap: '0.75rem',
-          marginBottom: '1rem'
+          marginBottom: '1.5rem'
         }}>
           <UserCircle size={36} color="var(--text-secondary)" />
           <div>
@@ -69,6 +79,7 @@ const Sidebar = () => {
           <NavLink 
             to={`${rolePrefix}/dashboard`} 
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={closeSidebar}
           >
             <LayoutDashboard size={20} />
             <span>Dashboard</span>
@@ -78,6 +89,7 @@ const Sidebar = () => {
              <NavLink 
                to={`${rolePrefix}/qr`} 
                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+               onClick={closeSidebar}
              >
                <QrCode size={20} />
                <span>QR Code</span>
@@ -86,6 +98,7 @@ const Sidebar = () => {
              <NavLink 
                to={`${rolePrefix}/scan`} 
                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+               onClick={closeSidebar}
              >
                <ScanLine size={20} />
                <span>Scan</span>
@@ -94,8 +107,8 @@ const Sidebar = () => {
 
         </nav>
 
-        <div className="logout-section" style={{ marginTop: 'auto' }}>
-          <button onClick={handleLogout} className="nav-item" style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--danger)' }}>
+        <div className="logout-section" style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+          <button onClick={handleLogout} className="nav-item" style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '0.75rem' }}>
             <LogOut size={20} />
             <span>Logout</span>
           </button>
