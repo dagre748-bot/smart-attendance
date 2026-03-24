@@ -3,7 +3,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { Bell } from 'lucide-react';
+import { Bell, CheckCircle, XCircle } from 'lucide-react';
+import { format } from 'date-fns';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement);
 
@@ -23,6 +24,7 @@ const Dashboard = () => {
   const { user } = useAuth();
   const [history, setHistory] = useState<AttendanceRecord[]>([]);
   const [totalClassesCount, setTotalClassesCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,6 +43,8 @@ const Dashboard = () => {
         
       } catch (error) {
         console.error('Error fetching dashboard data', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -95,7 +99,54 @@ const Dashboard = () => {
         </div>
       </div>
 
-
+      <div className="glass-panel">
+        <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          Recent Attendance History
+        </h2>
+        
+        {loading ? (
+          <p>Loading your history...</p>
+        ) : history.length > 0 ? (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
+                  <th style={{ padding: '1rem', fontWeight: 600 }}>Date</th>
+                  <th style={{ padding: '1rem', fontWeight: 600 }}>Subject</th>
+                  <th style={{ padding: '1rem', fontWeight: 600 }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history.slice(0, 10).map((record: AttendanceRecord) => (
+                  <tr key={record.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                    <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>
+                      {format(new Date(record.date), 'MMM dd, yyyy - HH:mm')}
+                    </td>
+                    <td style={{ padding: '1rem', fontWeight: 500 }}>
+                      {record.subject?.name || 'N/A'}
+                    </td>
+                    <td style={{ padding: '1rem' }}>
+                      {record.status === 'PRESENT' ? (
+                        <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <CheckCircle size={14} /> Present
+                        </span>
+                      ) : (
+                        <span className="badge badge-danger" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <XCircle size={14} /> Absent
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            <p>No attendance records found.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
