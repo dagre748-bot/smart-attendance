@@ -8,8 +8,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey';
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password, role, classId } = req.body;
+    const normalizedEmail = email.toLowerCase().trim();
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
@@ -50,8 +51,9 @@ const buildClassId = (role: string, classId: string | undefined | null) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = email.toLowerCase().trim();
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
