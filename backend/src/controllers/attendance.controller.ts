@@ -230,6 +230,32 @@ export const exportExcel = async (req: AuthRequest, res: Response) => {
     let queryDate = date ? new Date(date as string) : new Date();
     queryDate.setHours(0, 0, 0, 0);
 
+    // 1. Get class & subject details for the filename / headers
+    const classData = await prisma.class.findUnique({ where: { id: String(classId) } });
+    const subjectData = await prisma.subject.findUnique({ where: { id: String(subjectId) } });
+
+    if (!classData || !subjectData) {
+      return res.status(404).json({ message: 'Class or Subject not found' });
+    }
+
+    // 2. Fetch all students in this class
+    const students = await prisma.user.findMany({
+      where: {
+        classId: String(classId),
+        role: 'STUDENT'
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true
+      }
+    });
+
+    if (students.length === 0) {
+      return res.status(404).json({ message: 'No students found for this class' });
+    }
+
+    // 3. Fetch attendance records for today
     const records = await prisma.attendanceRecord.findMany({
       where: {
         classId: String(classId),
@@ -238,26 +264,25 @@ export const exportExcel = async (req: AuthRequest, res: Response) => {
           gte: queryDate,
           lt: new Date(queryDate.getTime() + 24 * 60 * 60 * 1000)
         }
-      },
-      include: {
-        student: { select: { name: true, email: true } },
-        subject: { select: { name: true } },
-        class: { select: { name: true } }
       }
     });
 
-    if (records.length === 0) {
-      return res.status(404).json({ message: 'No records found for the selected criteria' });
-    }
+    // 4. Map records by studentId for O(1) lookup
+    const recordMap = new Map();
+    records.forEach(r => recordMap.set(r.studentId, r));
 
-    const data = records.map(r => ({
-      'Student Name': r.student.name,
-      'Email': r.student.email,
-      'Class': r.class.name,
-      'Subject': r.subject.name,
-      'Date': format(new Date(r.date), 'yyyy-MM-dd HH:mm:ss'),
-      'Status': r.status
-    }));
+    // 5. Build final data array combining all students with their records
+    const data = students.map(student => {
+      const record = recordMap.get(student.id);
+      return {
+        'Student Name': student.name,
+        'Email': student.email,
+        'Class': classData.name,
+        'Subject': subjectData.name,
+        'Date': format(queryDate, 'yyyy-MM-dd'),
+        'Status': record ? record.status : 'NOT MARKED' // Show ALL students
+      };
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -265,7 +290,7 @@ export const exportExcel = async (req: AuthRequest, res: Response) => {
 
     const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
-    const fileName = `Attendance_${records[0].class.name}_${records[0].subject.name}_${format(queryDate, 'yyyy-MM-dd')}.xlsx`;
+    const fileName = `Attendance_${classData.name.replace(/\s+/g, '_')}_${subjectData.name.replace(/\s+/g, '_')}_${format(queryDate, 'yyyy-MM-dd')}.xlsx`;
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
