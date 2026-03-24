@@ -163,24 +163,6 @@ const TeacherDashboard = () => {
     }
   };
 
-  const handleMarkManual = async (studentId: string, status: string) => {
-    if (!selectedSubjectIdForAtt) {
-      alert('Please select a subject first');
-      return;
-    }
-    try {
-      await api.post('/attendance/manual', {
-        studentId,
-        classId: selectedClassId,
-        subjectId: selectedSubjectIdForAtt,
-        status
-      });
-      fetchAttendance(selectedClassId, selectedSubjectIdForAtt);
-    } catch (error) {
-      console.error('Error marking manual attendance', error);
-    }
-  };
-
   const handleExport = () => {
     if (!selectedClassId || !selectedSubjectIdForAtt) {
       alert('Please select a class and subject to export.');
@@ -290,26 +272,35 @@ const TeacherDashboard = () => {
               {students.length > 0 ? students.map(st => {
                 const status = getAttendanceStatus(st.id);
                 return (
-                  <div key={st.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: 'var(--bg-primary)', borderRadius: '0.5rem', borderLeft: status === 'PRESENT' ? '4px solid var(--accent-secondary)' : status === 'ABSENT' ? '4px solid var(--danger)' : '4px solid transparent' }}>
+                  <div key={st.id} style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between', 
+                    padding: '1rem', 
+                    background: 'var(--bg-primary)', 
+                    borderRadius: '0.8rem', 
+                    borderLeft: status === 'PRESENT' ? '4px solid var(--accent-secondary)' : '4px solid transparent',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                  }}>
                     <div>
-                      <div style={{ fontWeight: 600 }}>{st.name}</div>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{st.email}</div>
+                      <div style={{ fontWeight: 600, fontSize: '1rem' }}>{st.name}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{st.email}</div>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      {status === 'PRESENT' ? (
-                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--accent-secondary)', padding: '0.25rem 0.5rem' }}>Marked Present</span>
-                      ) : status === 'ABSENT' ? (
-                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--danger)', padding: '0.25rem 0.5rem' }}>Marked Absent</span>
-                      ) : (
-                        <>
-                          <button onClick={() => handleMarkManual(st.id, 'PRESENT')} className="btn btn-secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-secondary)', border: 'none' }}>Present</button>
-                          <button onClick={() => handleMarkManual(st.id, 'ABSENT')} className="btn btn-secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', border: 'none' }}>Absent</button>
-                        </>
-                      )}
-                    </div>
+                    {status === 'PRESENT' && (
+                      <span style={{ 
+                        fontSize: '0.75rem', 
+                        fontWeight: 700, 
+                        color: 'var(--accent-secondary)', 
+                        background: 'rgba(16, 185, 129, 0.1)', 
+                        padding: '0.3rem 0.6rem',
+                        borderRadius: '0.5rem'
+                      }}>
+                        Present
+                      </span>
+                    )}
                   </div>
                 );
-              }) : <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No students found in this class.</p>}
+              }) : <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No students registered in the system yet.</p>}
             </div>
           </div>
         </div>
