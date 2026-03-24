@@ -203,37 +203,35 @@ export const getClassAttendance = async (req: AuthRequest, res: Response) => {
   try {
     const { classId, subjectId, date } = req.query;
 
-    // To handle timezone issues (especially around midnight in India), 
-    // we fetch records from the last 24 hours if no specific date is provided,
-    // or we fetch the entire calendar day if a date IS provided.
-    let dateFilter: any;
-    
+    // Log for debugging
+    console.log(`Fetching attendance for: Class ${classId}, Subject ${subjectId}, Date Param: ${date}`);
+
+    // Flexible window: Look back 36 hours from the provided date (or now) 
+    // to ensure no scanner log is lost due to local/server timezone offsets.
+    let startDate;
     if (date) {
-      const start = new Date(date as string);
-      start.setHours(0, 0, 0, 0);
-      // Extend window slightly to handle potential offsets
-      dateFilter = {
-        gte: new Date(start.getTime() - 12 * 60 * 60 * 1000), 
-        lt: new Date(start.getTime() + 36 * 60 * 60 * 1000)
-      };
+        startDate = new Date(date as string);
+        startDate.setHours(0, 0, 0, 0);
+        startDate = new Date(startDate.getTime() - 12 * 60 * 60 * 1000); // 12h before start of day
     } else {
-      // Default: Last 24 hours
-      dateFilter = {
-        gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
-      };
+        startDate = new Date(Date.now() - 36 * 60 * 60 * 1000); // Past 36h
     }
 
     const records = await prisma.attendanceRecord.findMany({
       where: {
         classId: String(classId),
         subjectId: String(subjectId),
-        date: dateFilter
+        date: {
+          gte: startDate
+        }
       },
       include: {
         student: { select: { id: true, name: true, email: true } }
       },
       orderBy: { date: 'desc' }
     });
+
+    console.log(`Found ${records.length} records`);
 
     res.json(records);
   } catch (error) {
