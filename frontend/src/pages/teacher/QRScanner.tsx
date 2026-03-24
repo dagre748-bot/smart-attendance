@@ -10,11 +10,18 @@ interface Subject {
   class?: { name: string };
 }
 
+interface ScannedStudent {
+  id: string;
+  name: string;
+  time: string;
+}
+
 const QRScanner = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [selectedSubject, setSelectedSubject] = useState('');
   const [scanResult, setScanResult] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [isScanning, setIsScanning] = useState(true);
+  const [scannedStudents, setScannedStudents] = useState<ScannedStudent[]>([]);
 
   // Fetch subjects to record attendance against
   useEffect(() => {
@@ -30,7 +37,7 @@ const QRScanner = () => {
   }, []);
 
   const handleScan = async (result: string) => {
-    if (!result || !selectedSubject) return;
+    if (!result || !selectedSubject || !isScanning) return;
     
     // Temporarily pause scanning
     setIsScanning(false);
@@ -41,9 +48,18 @@ const QRScanner = () => {
         subjectId: selectedSubject
       });
 
+      const studentName = res.data.attendance.student.name;
+      const studentId = res.data.attendance.student.id;
+      
       setScanResult({
-        message: `Success: ${res.data.attendance.student.name} marked present.`,
+        message: `Success: ${studentName} marked present.`,
         type: 'success'
+      });
+      
+      setScannedStudents(prev => {
+        // Avoid duplicate entries in the local view if scanned multiple times (though backend prevents duplicate attendance)
+        if (prev.find(s => s.id === studentId)) return prev;
+        return [{ id: studentId, name: studentName, time: new Date().toLocaleTimeString() }, ...prev];
       });
       
     } catch (err: unknown) {
@@ -54,11 +70,11 @@ const QRScanner = () => {
       });
     }
 
-    // Resume scanning after 3 seconds
+    // Resume scanning after 2 seconds
     setTimeout(() => {
       setScanResult(null);
       setIsScanning(true);
-    }, 3000);
+    }, 2000);
   };
 
   return (
@@ -91,7 +107,7 @@ const QRScanner = () => {
         )}
       </div>
 
-      <div className="qr-container" style={{ position: 'relative', minHeight: '300px', backgroundColor: '#000', borderRadius: '1rem', overflow: 'hidden' }}>
+      <div className="qr-container" style={{ position: 'relative', minHeight: '300px', backgroundColor: '#000', borderRadius: '1rem', overflow: 'hidden', marginBottom: '2rem' }}>
         {scanResult && (
           <div style={{
             position: 'absolute',
@@ -123,8 +139,6 @@ const QRScanner = () => {
         {isScanning && selectedSubject ? (
           <Scanner 
             onScan={(result) => handleScan(result[0].rawValue)}
-            components={{
-            }}
             styles={{ container: { width: '100%', height: '100%' } }}
           />
         ) : (
@@ -133,6 +147,22 @@ const QRScanner = () => {
           </div>
         )}
       </div>
+
+      {scannedStudents.length > 0 && (
+        <div className="glass-panel" style={{ marginTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <CheckCircle size={20} color="var(--accent-secondary)" /> Recently Scanned
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {scannedStudents.map(student => (
+              <div key={student.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', background: 'var(--bg-primary)', borderRadius: '0.5rem' }}>
+                <span style={{ fontWeight: 600 }}>{student.name}</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{student.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
     </div>
   );

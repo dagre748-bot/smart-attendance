@@ -5,9 +5,10 @@ import { RefreshCw, ShieldCheck } from 'lucide-react';
 
 const QRGenerator = () => {
   const [token, setToken] = useState<string | null>(null);
+  const [studentName, setStudentName] = useState<string | null>(null);
+  const [className, setClassName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(30);
 
   const fetchToken = async () => {
     setLoading(true);
@@ -15,9 +16,10 @@ const QRGenerator = () => {
     try {
       const res = await api.get('/attendance/generate-qr');
       setToken(res.data.qrToken);
-      setTimeLeft(30);
+      setStudentName(res.data.studentName);
+      setClassName(res.data.className);
     } catch (err: any) {
-      setError('Failed to generate secure QR token. Make sure you are assigned to a class.');
+      setError('Failed to generate permanent QR token. Make sure you are assigned to a class.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -26,17 +28,7 @@ const QRGenerator = () => {
 
   useEffect(() => {
     fetchToken();
-    const intervalId = setInterval(fetchToken, 25000); // refresh every 25s
-
-    return () => clearInterval(intervalId);
   }, []);
-
-  useEffect(() => {
-    if (timeLeft > 0) {
-      const timerId = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timerId);
-    }
-  }, [timeLeft]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', animation: 'slideUp 0.3s ease' }}>
@@ -53,8 +45,15 @@ const QRGenerator = () => {
           <ShieldCheck size={48} />
         </div>
         
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Your Attendance QR</h1>
-        <p style={{ marginBottom: '2rem' }}>Show this to your teacher to get marked.</p>
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>Your Attendance QR</h1>
+        <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>Show this to your teacher to get marked.</p>
+
+        {studentName && className && (
+          <div style={{ marginBottom: '2rem', background: 'var(--bg-primary)', padding: '1rem', borderRadius: '0.5rem' }}>
+            <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>{studentName}</h2>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{className}</p>
+          </div>
+        )}
 
         {error && (
           <div style={{ color: 'var(--danger)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '0.5rem' }}>
@@ -76,23 +75,9 @@ const QRGenerator = () => {
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: 'var(--text-secondary)' }}>
-          <RefreshCw size={16} className={loading ? "spinner" : ""} />
-          <span>Refreshing in <strong>{timeLeft}s</strong></span>
-        </div>
-
         <p style={{ fontSize: '0.85rem', marginTop: '1.5rem', opacity: 0.7 }}>
-          This is a short-lived token generated automatically to prevent fraud.
+          This is your permanent attendance QR code.
         </p>
-
-        <button 
-          onClick={fetchToken} 
-          className="btn btn-secondary" 
-          style={{ width: '100%', marginTop: '1.5rem' }}
-          disabled={loading}
-        >
-          Force Refresh Now
-        </button>
       </div>
 
     </div>
@@ -100,3 +85,4 @@ const QRGenerator = () => {
 };
 
 export default QRGenerator;
+

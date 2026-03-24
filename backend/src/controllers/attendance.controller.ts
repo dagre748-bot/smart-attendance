@@ -8,7 +8,7 @@ import * as XLSX from 'xlsx';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey';
 
-// Student requests a short-lived QR token
+// Student requests a permanent QR token
 export const generateQR = async (req: AuthRequest, res: Response) => {
   try {
     const studentId = req.user?.userId;
@@ -18,16 +18,25 @@ export const generateQR = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: 'Invalid student data' });
     }
 
+    const student = await prisma.user.findUnique({
+      where: { id: studentId },
+      include: { studentClass: true }
+    });
+
     const payload = {
       studentId,
       classId,
       timestamp: Date.now()
     };
 
-    // Token expires in 30 seconds
-    const qrToken = jwt.sign(payload, JWT_SECRET, { expiresIn: '30s' });
+    // Token is permanent (no expiration)
+    const qrToken = jwt.sign(payload, JWT_SECRET);
 
-    res.json({ qrToken });
+    res.json({
+      qrToken,
+      studentName: student?.name,
+      className: student?.studentClass?.name
+    });
   } catch (error) {
     console.error('Error generating QR:', error);
     res.status(500).json({ message: 'Error generating QR token' });
