@@ -70,9 +70,9 @@ const TeacherDashboard = () => {
     }
   }, []);
 
-  const fetchStudents = useCallback(async (classId: string) => {
+  const fetchStudents = useCallback(async () => {
     try {
-      const res = await api.get(`/class/students?classId=${classId}`);
+      const res = await api.get('/class/students');
       setStudents(res.data);
     } catch (error) {
       console.error('Error fetching students', error);
@@ -93,14 +93,14 @@ const TeacherDashboard = () => {
 
   useEffect(() => {
     fetchClasses();
-  }, [fetchClasses]);
+    fetchStudents();
+  }, [fetchClasses, fetchStudents]);
 
   useEffect(() => {
     if (selectedClassId) {
       fetchSubjects(selectedClassId);
-      fetchStudents(selectedClassId);
     }
-  }, [selectedClassId, fetchSubjects, fetchStudents]);
+  }, [selectedClassId, fetchSubjects]);
 
   useEffect(() => {
     if (selectedClassId && selectedSubjectIdForAtt) {
@@ -128,9 +128,9 @@ const TeacherDashboard = () => {
   }, [selectedClassId, selectedSubjectIdForAtt, fetchAttendance]);
 
   const handleManualRefresh = () => {
+    fetchStudents();
     if (selectedClassId) {
        fetchSubjects(selectedClassId);
-       fetchStudents(selectedClassId);
        if (selectedSubjectIdForAtt) {
          fetchAttendance(selectedClassId, selectedSubjectIdForAtt);
        }

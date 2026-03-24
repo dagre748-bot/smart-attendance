@@ -106,10 +106,14 @@ export const getSubjects = async (req: AuthRequest, res: Response) => {
 export const getStudents = async (req: AuthRequest, res: Response) => {
     try {
         const { classId } = req.query;
-        if (!classId) return res.status(400).json({ message: 'classId is required' });
+        
+        const whereClause: any = { role: 'STUDENT' };
+        if (classId) {
+            whereClause.classId = String(classId);
+        }
 
         const students = await prisma.user.findMany({
-            where: { classId: String(classId), role: 'STUDENT' },
+            where: whereClause,
             select: { id: true, name: true, email: true }
         });
 
