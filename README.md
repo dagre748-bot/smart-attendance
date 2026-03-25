@@ -1,4 +1,4 @@
-# Smart Attendance System
+# AttendEase
 
 A modern, QR-code based attendance management system built with React, Node.js, and Prisma.
 

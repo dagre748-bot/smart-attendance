@@ -1,5 +1,5 @@
 {
-  "name": "smart-attendance-system-monorepo",
+  "name": "attendease-monorepo",
   "private": true,
   "scripts": {
     "install:all": "cd backend && npm install && cd ../frontend && npm install",

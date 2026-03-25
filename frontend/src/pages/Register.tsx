@@ -37,7 +37,7 @@ const Register = () => {
     <div className="auth-wrapper" style={{ padding: '2rem' }}>
       <div className="auth-card glass-panel" style={{ maxWidth: '500px' }}>
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-          <h1 style={{ fontSize: '1.75rem', margin: '0 0 0.5rem 0' }}>Join Smart Attend</h1>
+          <h1 style={{ fontSize: '1.75rem', margin: '0 0 0.5rem 0' }}>Join AttendEase</h1>
           <p>Create an account to start managing attendance</p>
         </div>
 

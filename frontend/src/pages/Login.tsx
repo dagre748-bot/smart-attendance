@@ -47,7 +47,7 @@ const Login = () => {
             <MonitorSmartphone size={48} />
           </div>
           <h1 style={{ fontSize: '1.75rem', margin: 0 }}>Welcome Back</h1>
-          <p style={{ marginTop: '0.5rem' }}>Login to your Smart Attendance account</p>
+          <p style={{ marginTop: '0.5rem' }}>Login to your AttendEase account</p>
         </div>
 
         {error && (

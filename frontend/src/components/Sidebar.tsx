@@ -41,7 +41,7 @@ const Sidebar = () => {
           <div style={{ background: 'var(--accent-primary)', color: 'white', borderRadius: '0.4rem', padding: '0.3rem' }}>
             <QrCode size={18} />
           </div>
-          <span style={{ fontWeight: 700 }}>Smart Attend</span>
+          <span style={{ fontWeight: 700 }}>AttendEase</span>
         </div>
         <div style={{ width: '24px' }} /> {/* Spacer to center logo */}
       </div>
@@ -56,7 +56,7 @@ const Sidebar = () => {
           }}>
             <QrCode size={24} />
           </div>
-          <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Smart Attend</h2>
+          <h2 style={{ fontSize: '1.25rem', margin: 0 }}>AttendEase</h2>
         </div>
 
         <div className="user-profile" style={{
