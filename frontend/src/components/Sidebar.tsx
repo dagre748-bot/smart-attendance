@@ -108,7 +108,7 @@ const Sidebar = () => {
         </nav>
 
         <div className="logout-section" style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
-          <button onClick={handleLogout} className="nav-item" style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '0.75rem' }}>
+          <button onClick={() => { handleLogout(); closeSidebar(); }} className="nav-item" style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '0.75rem' }}>
             <LogOut size={20} />
             <span>Logout</span>
           </button>

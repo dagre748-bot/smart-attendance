@@ -229,12 +229,12 @@ const TeacherDashboard = () => {
 
   return (
     <div style={{ animation: 'slideUp 0.3s ease' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <header className="res-grid-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ fontSize: '1.8rem', margin: 0 }}>Teacher Dashboard</h1>
           <p>Manage your classes, subjects, and attendance</p>
         </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div className="res-btn-group" style={{ display: 'flex', gap: '1rem' }}>
           <button onClick={handleManualRefresh} className="btn btn-secondary">
              Refresh Data
           </button>
@@ -294,7 +294,7 @@ const TeacherDashboard = () => {
           </div>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+      <div className="split-grid" style={{ marginBottom: '2rem' }}>
         {/* Manual Attendance */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div className="glass-panel" style={{ flex: 1, maxHeight: '600px', overflowY: 'auto' }}>
@@ -393,7 +393,7 @@ const TeacherDashboard = () => {
       </div>
 
       {/* Add New Class / Subject Section */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
+      <div className="split-grid">
         <div className="glass-panel">
           <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem' }}>Create New Class</h2>
           <form onSubmit={handleCreateClass} style={{ display: 'flex', gap: '1rem' }}>

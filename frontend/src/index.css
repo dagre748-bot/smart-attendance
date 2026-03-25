@@ -72,6 +72,12 @@ p {
   gap: 1.5rem;
 }
 
+.content-inner {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 /* Glassmorphism Classes */
 .glass-panel {
   background: var(--glass-bg);
@@ -394,7 +400,7 @@ p {
     left: 0;
     right: 0;
     height: 65px;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--bg-secondary);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border-color);
@@ -402,64 +408,60 @@ p {
     justify-content: space-between;
     padding: 0 1rem;
     z-index: 2000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
 
-  .menu-toggle {
-    background: transparent;
-    border: none;
-    color: var(--text-primary);
-    cursor: pointer;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
+  /* Responsive Grid Adjustments */
+  .res-grid-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
   }
 
-  .menu-toggle:active {
-    background: rgba(0,0,0,0.05);
+  .res-grid-header h1 {
+    font-size: 1.5rem !important;
   }
 
-  @media (prefers-color-scheme: dark) {
-    .mobile-header {
-      background: rgba(17, 24, 39, 0.8);
-    }
+  .res-btn-group {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.5rem !important;
+  }
+
+  .res-btn-group .btn {
+    flex: 1;
+    min-width: 120px;
   }
 
   /* Card Grid Optimization for Mobile */
   .dashboard-grid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
   }
 
-  .stat-card.glass-panel {
-    padding: 1.5rem;
-    border-radius: 1.25rem;
+  .stat-card {
+    padding: 1.25rem !important;
+    border-radius: 1rem !important;
   }
 
   .stat-card .value {
-    font-size: 2rem;
+    font-size: 1.75rem !important;
+  }
+
+  /* Split View Tables for Mobile */
+  .split-grid {
+     grid-template-columns: 1fr !important;
   }
 
   /* Interactive Elements */
   .btn, .input-field {
-    min-height: 3.5rem; /* Better touch target */
-    font-size: 1rem;
-    border-radius: 1rem;
-  }
-
-  /* Responsive QR Container */
-  .qr-container {
-    padding: 1.5rem !important;
-    margin: 1.5rem auto !important;
-    max-width: 100% !important;
-    width: 280px !important;
-    height: 280px !important;
+    min-height: 3rem; /* Better touch target */
+    font-size: 0.95rem;
   }
 
   /* Table Accessibility */
   .glass-panel {
-    overflow: hidden;
+    padding: 1rem !important;
   }
 
   table {
@@ -473,5 +475,11 @@ p {
 @media (min-width: 769px) {
   .mobile-header {
     display: none;
+  }
+  
+  .split-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
   }
 }

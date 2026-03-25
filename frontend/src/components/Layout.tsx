@@ -34,7 +34,9 @@ const Layout = () => {
     <div className="app-container">
       <Sidebar />
       <main className="main-content">
-        <Outlet />
+        <div className="content-inner">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
